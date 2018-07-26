@@ -508,7 +508,7 @@ static void dispatch_connection(int socket, Fiche_Settings *settings) {
     // Create an argument for the thread function
     struct fiche_connection *c = malloc(sizeof(*c));
     if (!c) {
-        print_error("Couldn't allocate memory!");
+        print_error("Couldn't allocate memory for connection!");
         return;
     }
     c->socket = s;
@@ -558,10 +558,18 @@ static void *handle_connection(void *args) {
     }
 
     // Create a buffer
-    uint8_t buffer[c->settings->buffer_len];
+    uint8_t *buffer = malloc(c->settings->buffer_len);
+    if (!buffer) {
+        print_error("Couldn't allocate memory for buffer!");
+        close(c->socket);
+        free(c);
+        pthread_exit(NULL);
+
+        return 0;
+    }
     memset(buffer, 0, c->settings->buffer_len);
 
-    const int r = recv(c->socket, buffer, sizeof(buffer), MSG_WAITALL);
+    const int r = recv(c->socket, buffer, c->settings->buffer_len, MSG_WAITALL);
     if (r <= 0) {
         print_error("No data received from the client!");
         print_separator();
@@ -571,6 +579,7 @@ static void *handle_connection(void *args) {
 
         // Cleanup
         free(c);
+        free(buffer);
         pthread_exit(NULL);
 
         return 0;
@@ -611,9 +620,10 @@ static void *handle_connection(void *args) {
             print_separator();
 
             // Cleanup
-            free(c);
-            free(slug);
             close(c->socket);
+            free(c);
+            free(buffer);
+            free(slug);
             pthread_exit(NULL);
             return NULL;
         }
@@ -631,6 +641,7 @@ static void *handle_connection(void *args) {
 
         // Cleanup
         free(c);
+        free(buffer);
         pthread_exit(NULL);
         return NULL;
     }
@@ -645,6 +656,7 @@ static void *handle_connection(void *args) {
 
         // Cleanup
         free(c);
+        free(buffer);
         free(slug);
         pthread_exit(NULL);
         return NULL;
@@ -675,6 +687,7 @@ static void *handle_connection(void *args) {
     // Perform cleanup of values used in this thread
     free(slug);
     free(c);
+    free(buffer);
 
     pthread_exit(NULL);
 
