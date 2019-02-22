@@ -766,7 +766,7 @@ static int save_to_file(const Fiche_Settings *s, uint8_t *data, char *slug) {
     // Null-terminate buffer if not null terminated already
     data[s->buffer_len - 1] = 0;
 
-    if ( fprintf(f, "%s\n%s", stylesheet, data) < 0 ) {
+    if ( fprintf(f, "%s", data) < 0 ) {
         fclose(f);
         free(path);
         return -1;
