@@ -744,6 +744,7 @@ static int create_directory(char *output_dir, char *slug) {
 
 static int save_to_file(const Fiche_Settings *s, uint8_t *data, char *slug) {
     char *file_name = "index.html";
+    char *stylesheet = "<style> html, body {font-family:monospace; white-space:pre-wrap; display:block;} </style>";
 
     // Additional 2 bytes are for 2 slashes
     size_t len = strlen(s->output_dir_path) + strlen(slug) + strlen(file_name) + 3;
@@ -766,7 +767,7 @@ static int save_to_file(const Fiche_Settings *s, uint8_t *data, char *slug) {
     // Null-terminate buffer if not null terminated already
     data[s->buffer_len - 1] = 0;
 
-    if ( fprintf(f, "%s", data) < 0 ) {
+    if ( fprintf(f, "%s\n%s", stylesheet, data) < 0 ) {
         fclose(f);
         free(path);
         return -1;
