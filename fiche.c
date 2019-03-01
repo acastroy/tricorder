@@ -659,7 +659,7 @@ static void *handle_connection(void *args) {
         const size_t len = strlen(c->settings->domain) + strlen(slug) + 3;
 
         char url[len];
-        snprintf(url, len, "%s%s%s%s", c->settings->domain, "/", slug, "\n");
+        snprintf(url, len, "%s%s%s", c->settings->domain, "/", slug);
 
         // Send the response
         write(c->socket, url, len);
