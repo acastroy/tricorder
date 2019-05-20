@@ -667,7 +667,7 @@ static void *handle_connection(void *args) {
 
     // Write a response to the user
     {
-        // Create an url (additional byte for slash and one for new line)
+        // Create an url (additional byte for slash and one for null byte)
         const size_t len = strlen(c->settings->domain) + strlen(slug) + 2;
 
         char url[len];
