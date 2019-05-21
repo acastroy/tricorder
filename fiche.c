@@ -667,8 +667,8 @@ static void *handle_connection(void *args) {
 
     // Write a response to the user
     {
-        // Create an url (additional byte for slash and one for new line)
-        const size_t len = strlen(c->settings->domain) + strlen(slug) + 3;
+        // Create an url (additional byte for slash and one for null byte)
+        const size_t len = strlen(c->settings->domain) + strlen(slug) + 2;
 
         char url[len];
         snprintf(url, len, "%s%s%s", c->settings->domain, "/", slug);
@@ -785,6 +785,22 @@ static int save_to_file(const Fiche_Settings *s, uint8_t *data, char *slug) {
         return -1;
     }
 
+    // Convert to HTML to utilize color codes
+
+    // Flush the file so the HTML conversion can use the data
+    fflush(f);
+
+    // Get the size of the resulting string
+    size_t command_len = snprintf(NULL, 0, "ansi2html < \"%s\" > \"%s/%s/index.html\"", path, s->output_dir_path, slug);
+
+    // Create the string
+    char *ansi2html_command = malloc(command_len + 1);
+    snprintf(ansi2html_command, command_len + 1, "ansi2html < \"%s\" > \"%s/%s/index.html\"", path, s->output_dir_path, slug);
+
+    // Run the command
+    system(ansi2html_command);
+
+    free(ansi2html_command);
     fclose(f);
     free(path);
 

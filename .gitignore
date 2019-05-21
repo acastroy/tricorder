@@ -6,3 +6,6 @@ code/
 
 # ignore log files
 *.log
+
+# CMake build output
+cmake-build-debug
