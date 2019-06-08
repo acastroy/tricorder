@@ -791,11 +791,12 @@ static int save_to_file(const Fiche_Settings *s, uint8_t *data, char *slug) {
     fflush(f);
 
     // Get the size of the resulting string
-    size_t command_len = snprintf(NULL, 0, "ansi2html < \"%s\" > \"%s/%s/index.html\"", path, s->output_dir_path, slug);
+    char command_format[] = "ansi2html --font-size larger < \"%s\" > \"%s/%s/index.html\"";
+    size_t command_len = snprintf(NULL, 0, command_format, path, s->output_dir_path, slug);
 
     // Create the string
     char *ansi2html_command = malloc(command_len + 1);
-    snprintf(ansi2html_command, command_len + 1, "ansi2html < \"%s\" > \"%s/%s/index.html\"", path, s->output_dir_path, slug);
+    snprintf(ansi2html_command, command_len + 1, command_format, path, s->output_dir_path, slug);
 
     // Run the command
     system(ansi2html_command);
